@@ -28,13 +28,13 @@ public class Receiver implements Runnable{
     }
 
     public Response pop() {
-        Response m = null;
+        Response resp = null;
         lock.lock();
         if(!queue.isEmpty()) {
-            m = queue.pop();
+            resp = queue.pop();
         }
         lock.unlock();
-        return m;
+        return resp;
     }
 
     @Override

@@ -13,7 +13,7 @@ public class LoginRequest extends Request {
         this.name = name;
     }
     public LoginRequest() {
-
+        this.type = "LoginRequest";
     }
 
     public String getName() {
@@ -27,6 +27,7 @@ public class LoginRequest extends Request {
     @Override
     public byte[] encode() {
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put("type",type);
         jsonObject.put("name",name);
         return jsonObject.toString().getBytes();
     }

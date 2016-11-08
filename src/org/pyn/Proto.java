@@ -1,10 +1,7 @@
 package org.pyn;
 
 import org.json.JSONObject;
-import org.pyn.message.ChatResponse;
-import org.pyn.message.LoginResponse;
-import org.pyn.message.Request;
-import org.pyn.message.Response;
+import org.pyn.message.*;
 
 import java.io.UnsupportedEncodingException;
 
@@ -31,6 +28,7 @@ public class Proto {
         String s = new String(b, 2, len, "UTF-8");
         JSONObject jsonObject = new JSONObject(s);
         String type = (String)jsonObject.get("type");
+
         if(type.compareTo("LoginResponse") == 0) {
             LoginResponse lr = new LoginResponse();
             lr.setResult((String)jsonObject.get("result"));
@@ -38,6 +36,10 @@ public class Proto {
         } else if(type.compareTo("ChatResponse") == 0) {
             ChatResponse cr = new ChatResponse();
             return cr;
+        } else if(type.compareTo("AddFriResponde") == 0) {
+            AddFriResponse afr = new AddFriResponse();
+            afr.setResult((String)jsonObject.get("result"));
+            return afr;
         }
         return null;
     }

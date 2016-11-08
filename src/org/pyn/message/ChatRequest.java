@@ -10,7 +10,7 @@ public class ChatRequest extends Request {
     private String content;
 
     public ChatRequest(String toName, String content) {
-        this.type = "ChatRequset";
+        this.type = "ChatRequest";
         this.toName = toName;
         this.content = content;
     }
@@ -33,6 +33,7 @@ public class ChatRequest extends Request {
     @Override
     public byte[] encode() {
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put("type",type);
         jsonObject.put("toName",toName);
         jsonObject.put("content",content);
         return jsonObject.toString().getBytes();

@@ -12,4 +12,11 @@ public class LoginResponse extends Response{
     public void setResult(String result) {
         this.result = result;
     }
+
+    @Override
+    public String toString() {
+        return "LoginResponse{" +
+                "result='" + result + '\'' +
+                "type="+ type + '}';
+    }
 }
