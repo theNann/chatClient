@@ -1,9 +1,7 @@
 package org.pyn;
-import org.pyn.message.AddFriRequest;
-import org.pyn.message.ChatRequest;
-import org.pyn.message.LoginRequest;
-import org.pyn.message.LoginResponse;
+import org.pyn.message.*;
 
+import java.util.LinkedList;
 import java.util.Scanner;
 
 /**
@@ -44,24 +42,59 @@ public class Client {
             }
         }
 
+        ReadFromControl readFromControl = new ReadFromControl();
+        Thread readThread = new Thread(readFromControl);
+        readThread.start();
 
-        System.out.println("请选择：");
-        System.out.println("1 : 加好友");
-        System.out.println("2 : 聊天");
-        while (sc.hasNext()) {
-            int option = sc.nextInt();
-            if(option == 1) {
-                System.out.println("请输入好友昵称：");
-                String name = sc.nextLine();
-                conn.write(new AddFriRequest(name));
-            } else {
-                System.out.println("请输入好友昵称及消息：");
-                String to_name = sc.nextLine();
-                String content = sc.nextLine();
-                conn.write(new ChatRequest(to_name,content));
+        while (true) {
+            Request request = readFromControl.getRequest();
+            if(request != null) {
+               conn.write(request);
             }
-        }
+            Response response = conn.read();
+            if(response != null) {
+                if(response.type.equals("AddFriResponse")) {
+                    AddFriResponse addFriResponse = (AddFriResponse) response;
+                    System.out.println(addFriResponse);
+                    if(addFriResponse.getResult().equals("on-yes")) {
+                        System.out.println("加好友消息提示：" + addFriResponse.getName() + "愿意加您为好友");
+                    } else if(addFriResponse.getResult().equals("off")){
+                        System.out.println("加好友消息提示：" + addFriResponse.getName() + "不在线");
+                    } else if(addFriResponse.getResult().equals("on-no")) {
+                        System.out.println("加好友消息提示：" + addFriResponse.getName() + "拒绝加您为好友");
+                    }
+                } else if (response.type.equals("ChatResponse")) {
+                    ChatResponse chatResponse = (ChatResponse) response;
+                    String fromName = chatResponse.getFromName();
+                    String content = chatResponse.getContent();
+                    System.out.println("新的消息：");
+                    if(chatResponse.isSuccess()) {
+                        System.out.println(fromName + ": " + content);
+                    } else {
+                        System.out.println(content);
+                    }
+                } else if(response.type.equals("FriendsResponse")) {
+                    FriendsResponse friendsResponse = (FriendsResponse) response;
+                    LinkedList<String> friendQueue = friendsResponse.getFriendQueue();
+                    if(friendQueue.size() == 0) {
+                        System.out.println("好友列表为空...");
+                    } else {
+                        for (int i = 0; i < friendQueue.size(); i++) {
+                            System.out.println(friendQueue.get(i));
+                        }
+                    }
+                }
+            }
 
-        // 主线程负责发送消息，服务器已成功将回应消息发送过来，接下来处理如何接受消息并显示出来
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+
+            // 主线程负责发送消息，服务器已成功将回应消息发送过来，接下来处理如何接受消息并显示出来
+
+        }
     }
 }

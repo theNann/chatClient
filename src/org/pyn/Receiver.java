@@ -44,6 +44,7 @@ public class Receiver implements Runnable{
             try {
                 Response m = doReceiveMsg();
                 push(m);
+                System.out.println("Receiver : " + m);
             } catch (IOException e) {
                 e.printStackTrace();
                 ok = false;

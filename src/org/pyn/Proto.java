@@ -1,9 +1,11 @@
 package org.pyn;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.pyn.message.*;
 
 import java.io.UnsupportedEncodingException;
+import java.util.LinkedList;
 
 /**
  * Created by pyn on 2016/10/20.
@@ -28,20 +30,8 @@ public class Proto {
         String s = new String(b, 2, len, "UTF-8");
         JSONObject jsonObject = new JSONObject(s);
         String type = (String)jsonObject.get("type");
-
-        if(type.compareTo("LoginResponse") == 0) {
-            LoginResponse lr = new LoginResponse();
-            lr.setResult((String)jsonObject.get("result"));
-            return lr;
-        } else if(type.compareTo("ChatResponse") == 0) {
-            ChatResponse cr = new ChatResponse();
-            return cr;
-        } else if(type.compareTo("AddFriResponde") == 0) {
-            AddFriResponse afr = new AddFriResponse();
-            afr.setResult((String)jsonObject.get("result"));
-            return afr;
-        }
-        return null;
+        ResponseFactory factory = new ResponseFactory();
+        return factory.decode(type,jsonObject);
     }
 
     private byte[] numToByte(int num) {
